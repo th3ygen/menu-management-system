@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
+/* providers */
 import { ThemeProvider } from "@/providers/theme-provider";
+import { StoreProvider } from "@/providers/store-provider";
 
 import Sidebar, { NavCategory } from "@/components/layout/sidebar";
 import Topbar from "@/components/layout/topbar";
@@ -24,10 +26,27 @@ const navs = [
 		label: "Systems",
 		icon: <FolderIcon fill="white" size={"1.2rem"} />,
 		items: [
-			{ label: "System 1", href: "/", icon: <GridIcon size={"1.2rem"} /> },
-			{ label: "System 4", href: "/", icon: <GridIcon size={"1.2rem"} /> },
-			{ label: "System 2", href: "/", icon: <GridIcon size={"1.2rem"} />, active: true },
-			{ label: "System 3", href: "/", icon: <GridIcon size={"1.2rem"} /> },
+			{
+				label: "System 1",
+				href: "/",
+				icon: <GridIcon size={"1.2rem"} />,
+			},
+			{
+				label: "System 4",
+				href: "/",
+				icon: <GridIcon size={"1.2rem"} />,
+			},
+			{
+				label: "System 2",
+				href: "/",
+				icon: <GridIcon size={"1.2rem"} />,
+				active: true,
+			},
+			{
+				label: "System 3",
+				href: "/",
+				icon: <GridIcon size={"1.2rem"} />,
+			},
 		],
 	},
 ] satisfies NavCategory[];
@@ -41,19 +60,21 @@ export default function RootLayout({
 		/* surpressing hydration warning for next-themes + shadcn */
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${plusJakartaSans.className} antialiased`}>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="light"
-					enableSystem
-				>
-					<Sidebar navs={navs} />
-					<Topbar />
-					<main className="w-full h-full pl-[17rem] pt-[5rem]">
-						<div className="w-full h-full bg-green-400">
-							{children}
-						</div>
-					</main>
-				</ThemeProvider>
+				<StoreProvider>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="light"
+						enableSystem
+					>
+						<Sidebar navs={navs} />
+						<Topbar />
+						<main className="w-full h-full pl-[17rem] pt-[5rem]">
+							<div className="w-full h-full bg-green-400">
+								{children}
+							</div>
+						</main>
+					</ThemeProvider>
+				</StoreProvider>
 			</body>
 		</html>
 	);
