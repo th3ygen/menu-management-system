@@ -7,6 +7,7 @@ export interface MenuState {
 	activeNode: TreeNode | null;
 	activeNodeId: string;
 	status: "pending" | "success" | "failed";
+	hoveredId: string;
 	isExpanded: boolean;
 }
 
@@ -117,6 +118,7 @@ const initialState: MenuState = {
 	activeNodeId: "",
 	isExpanded: true,
 	status: "pending",
+	hoveredId: "",
 };
 
 export const menuSlice = createSlice({
@@ -132,7 +134,10 @@ export const menuSlice = createSlice({
 		setActiveNode: (state, action: PayloadAction<TreeNode>) => {
 			state.activeNode = action.payload;
 			state.activeNodeId = action.payload.id;
-		}
+		},
+		setHoveredId: (state, action: PayloadAction<string>) => {
+			state.hoveredId = action.payload;
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchMenus.fulfilled, (state, action) => {
@@ -181,6 +186,7 @@ export const menuSlice = createSlice({
 	},
 });
 
-export const { setTree, setExpanded, setActiveNode } = menuSlice.actions;
+export const { setTree, setExpanded, setActiveNode, setHoveredId } =
+	menuSlice.actions;
 
 export default menuSlice.reducer;

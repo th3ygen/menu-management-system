@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -5,24 +7,21 @@ import {
 	BreadcrumbList,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useAppSelector } from "@/store/hooks";
 import { Slash, Folder } from "lucide-react";
 
 const Topbar: React.FC = () => {
+	const activeLabel = useAppSelector((state) => state.navigation.activeLabel);
 	return (
 		<div className="h-[5rem] z-50 flex items-end gap-2">
 			<Folder fill="white" size={"1.2rem"} />
 			<Breadcrumb>
 				<BreadcrumbList>
-					<BreadcrumbItem>
-						<BreadcrumbLink href="/">Home</BreadcrumbLink>
-					</BreadcrumbItem>
 					<BreadcrumbSeparator>
 						<Slash />
 					</BreadcrumbSeparator>
 					<BreadcrumbItem>
-						<BreadcrumbLink href="/components">
-							Components
-						</BreadcrumbLink>
+						<BreadcrumbLink href="/">{activeLabel}</BreadcrumbLink>
 					</BreadcrumbItem>
 				</BreadcrumbList>
 			</Breadcrumb>

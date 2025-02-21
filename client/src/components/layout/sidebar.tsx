@@ -2,22 +2,24 @@
 
 import LogoSVG from "@/logo.svg";
 import Image from "next/image";
-import { Menu as MenuIcon } from "lucide-react";
+import { FolderIcon, LayoutGrid, Menu as MenuIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setActiveMenuId } from "@/store/navigation/navigation-slice";
+import {
+	setActiveLabel,
+	setActiveMenuId,
+} from "@/store/navigation/navigation-slice";
+import { useEffect, useState } from "react";
 
 export type NavCategory = {
 	id: string;
-	icon: React.ReactNode;
 	label: string;
 	items: NavItem[];
 };
 
 export type NavItem = {
 	id: string;
-	icon: React.ReactNode;
 	label: string;
 };
 
@@ -37,8 +39,9 @@ const Category: React.FC<{ nav: NavCategory }> = ({ nav }) => {
 	);
 	const dispatch = useAppDispatch();
 
-	const handleClick = (id: string) => {
+	const handleClick = (id: string, label: string) => {
 		dispatch(setActiveMenuId(id));
+		dispatch(setActiveLabel(label));
 	};
 	const renderItems = () =>
 		nav.items.map((item) => (
@@ -47,7 +50,7 @@ const Category: React.FC<{ nav: NavCategory }> = ({ nav }) => {
 					className={cn(
 						"relative text-sm text-white/40 p-4 font-bold rounded-2xl cursor-pointer"
 					)}
-					onClick={() => handleClick(item.id)}
+					onClick={() => handleClick(item.id, item.label)}
 				>
 					{activeMenuId === item.id ? <ActiveItem /> : null}
 
@@ -57,7 +60,7 @@ const Category: React.FC<{ nav: NavCategory }> = ({ nav }) => {
 							activeMenuId === item.id && "text-secondary"
 						)}
 					>
-						{item.icon}
+						<LayoutGrid size="1.2rem" />
 						<p>{item.label}</p>
 					</div>
 				</div>
@@ -67,17 +70,40 @@ const Category: React.FC<{ nav: NavCategory }> = ({ nav }) => {
 	return (
 		<div className="flex flex-col bg-secondary-foreground rounded-xl py-2 my-2">
 			<div className="flex gap-4 px-4 py-2">
-				{nav.icon}
-				<h2 className="font-semibold text-sm text-accent">{nav.label}</h2>
+				<FolderIcon size="1.2rem" fill="white" />
+				<h2 className="font-semibold text-sm text-accent">
+					{nav.label}
+				</h2>
 			</div>
 			<ul className="flex flex-col">{renderItems()}</ul>
 		</div>
 	);
 };
 
-const Sidebar: React.FC<{ navs: NavCategory[] }> = ({ navs }) => {
+const Sidebar: React.FC = () => {
+	const tree = useAppSelector((state) => state.menu.tree);
+	const [categories, setCategories] = useState<NavCategory[]>([]);
+
+	useEffect(() => {
+		if (tree) {
+			if (tree.length > 0 && tree[0].childs) {
+				const cat = tree[0].childs[0].childs;
+
+				const list: NavCategory[] = (cat || []).map((item) => ({
+					id: item.id,
+					label: item.label,
+					items: (item.childs || []).map((i) => ({
+						id: i.id,
+						label: i.label,
+					})),
+				}));
+				setCategories(list);
+			}
+		}
+	}, [tree]);
+
 	const Navs = () =>
-		navs.map((nav) => <Category key={nav.label} nav={nav} />);
+		categories.map((cat) => <Category key={cat.label} nav={cat} />);
 
 	return (
 		<section className="fixed top-0 left-0 px-4 py-6 h-[100vh] w-[17rem]">

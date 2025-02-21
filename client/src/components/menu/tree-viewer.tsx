@@ -10,7 +10,9 @@ import {
 	newMenu,
 	setActiveNode,
 	setExpanded,
+	setHoveredId,
 } from "@/store/menu/menu-slice";
+import { motion } from "motion/react";
 
 export interface TreeNode {
 	id: string;
@@ -23,6 +25,7 @@ export interface TreeNode {
 const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const isExpanded = useAppSelector((state) => state.menu.isExpanded);
+	const hoveredId = useAppSelector((state) => state.menu.hoveredId);
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
@@ -41,6 +44,10 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 
 	const handleEdit = () => {
 		dispatch(setActiveNode(node));
+	};
+
+	const handleHover = () => {
+		dispatch(setHoveredId(node.id));
 	};
 
 	const IndicatorLine = () => {
@@ -112,32 +119,41 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 						<div className="absolute left-0 top-[11px] h-0.5 w-6 bg-gray-300"></div>
 					</>
 				)}
-				<div className="flex gap-4 items-center group">
+				<motion.div
+					className="relative flex gap-4 items-center group"
+					onHoverStart={handleHover}
+				>
 					<span className="ml-1 text-sm">{node.label}</span>
-					<div className="flex gap-2 transition-all -translate-x-2 duration-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 ">
-						<Button
-							size="icon"
-							className="rounded-full h-6 w-6 transition-all duration-300 bg-blue-700 hover:bg-blue-400"
-							onClick={handleNewNode}
+					{hoveredId === node.id && (
+						<motion.div
+							className="h-0 flex gap-2 mb-4"
+							layoutId="actions"
+							layout="position"
 						>
-							<PlusIcon className="text-white" />
-						</Button>
-						<Button
-							size="icon"
-							className="rounded-full h-6 w-6 transition-all duration-300 bg-blue-700 hover:bg-blue-400"
-							onClick={handleEdit}
-						>
-							<PenIcon className="text-white" />
-						</Button>
-						<Button
-							size="icon"
-							className="rounded-full h-6 w-6 transition-all duration-300 bg-red-700 hover:bg-blue-400"
-							onClick={handleDeleteNode}
-						>
-							<TrashIcon className="text-white" />
-						</Button>
-					</div>
-				</div>
+							<Button
+								size="icon"
+								className="rounded-full h-6 w-6 transition-all duration-300 bg-blue-700 hover:bg-blue-400"
+								onClick={handleNewNode}
+							>
+								<PlusIcon className="text-white" />
+							</Button>
+							<Button
+								size="icon"
+								className="rounded-full h-6 w-6 transition-all duration-300 bg-blue-700 hover:bg-blue-400"
+								onClick={handleEdit}
+							>
+								<PenIcon className="text-white" />
+							</Button>
+							<Button
+								size="icon"
+								className="rounded-full h-6 w-6 transition-all duration-300 bg-red-700 hover:bg-blue-400"
+								onClick={handleDeleteNode}
+							>
+								<TrashIcon className="text-white" />
+							</Button>
+						</motion.div>
+					)}
+				</motion.div>
 			</div>
 			{hasChildren && (
 				<div
