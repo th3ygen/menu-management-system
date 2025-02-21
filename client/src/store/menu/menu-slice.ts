@@ -26,17 +26,57 @@ function parseMenu(data: Menu[]): TreeNode[] {
 	return traverse(data, 0);
 }
 
-export const fetchMenus = createAsyncThunk(
-	`${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}` +
-		"/menus/roots",
-	async () => {
+export const fetchMenus = createAsyncThunk("/menus/roots", async () => {
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}` +
+			"/menus/roots"
+	);
+	const data = await response.json();
+
+	const parsed = parseMenu(data);
+
+	return parsed;
+});
+
+type NewMenuParams = {
+	parentId: string;
+};
+
+export const newMenu = createAsyncThunk(
+	"/menus/new",
+	async (data: NewMenuParams) => {
 		const response = await fetch(
 			`${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}` +
-				"/menus/roots"
+				"/menus",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			}
 		);
-		const data = await response.json();
+		const result = await response.json();
 
-		const parsed = parseMenu(data);
+		const parsed = parseMenu(result);
+
+		return parsed;
+	}
+);
+
+export const deleteMenu = createAsyncThunk(
+	"/menus/delete",
+	async (id: string) => {
+		const response = await fetch(
+			`${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}` +
+				`/menus/${id}`,
+			{
+				method: "DELETE",
+			}
+		);
+		const result = await response.json();
+
+		const parsed = parseMenu(result);
 
 		return parsed;
 	}
@@ -68,6 +108,28 @@ export const menuSlice = createSlice({
 			state.status = "failed";
 		});
 		builder.addCase(fetchMenus.pending, (state) => {
+			state.status = "pending";
+		});
+
+		builder.addCase(newMenu.fulfilled, (state, action) => {
+			state.tree = action.payload;
+			state.status = "success";
+		});
+		builder.addCase(newMenu.rejected, (state) => {
+			state.status = "failed";
+		});
+		builder.addCase(newMenu.pending, (state) => {
+			state.status = "pending";
+		});
+
+		builder.addCase(deleteMenu.fulfilled, (state, action) => {
+			state.tree = action.payload;
+			state.status = "success";
+		});
+		builder.addCase(deleteMenu.rejected, (state) => {
+			state.status = "failed";
+		});
+		builder.addCase(deleteMenu.pending, (state) => {
 			state.status = "pending";
 		});
 	},

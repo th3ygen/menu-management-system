@@ -1,11 +1,11 @@
 "use client";
 
-import { ChevronRight, PlusIcon } from "lucide-react";
+import { ChevronRight, MinusIcon, PlusIcon } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setExpanded } from "@/store/menu/menu-slice";
+import { deleteMenu, newMenu, setExpanded } from "@/store/menu/menu-slice";
 
 export interface TreeNode {
 	id: string;
@@ -18,13 +18,21 @@ export interface TreeNode {
 const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const isExpanded = useAppSelector((state) => state.menu.isExpanded);
+	const dispatch = useAppDispatch();
 
 	useEffect(() => {
 		setIsOpen(isExpanded);
-		console.log("isExpanded", isExpanded);
 	}, [isExpanded]);
 
 	const hasChildren = node.childs && node.childs.length > 0;
+
+	const handleNewNode = () => {
+		dispatch(newMenu({ parentId: node.id }));
+	};
+
+	const handleDeleteNode = () => {
+		dispatch(deleteMenu(node.id));
+	};
 
 	const IndicatorLine = () => {
 		if (node.depth === 0) {
@@ -68,9 +76,12 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 
 	return (
 		<li className="relative my-3">
-			{node.childs && node.childs.length > 0 && node.depth > 1 && !node.isLastChild && (
-				<div className="absolute -left-[13px] top-0 h-[115%] w-0.5 bg-gray-300 "></div>
-			)}
+			{node.childs &&
+				node.childs.length > 0 &&
+				node.depth > 0 &&
+				!node.isLastChild && (
+					<div className="absolute -left-[13px] top-0 h-[115%] w-0.5 bg-gray-300 "></div>
+				)}
 			<div className="relative flex items-center">
 				<IndicatorLine />
 				{hasChildren && (
@@ -94,12 +105,22 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 				)}
 				<div className="flex gap-4 items-center group">
 					<span className="ml-1 text-sm">{node.label}</span>
-					<Button
-						size="icon"
-						className="rounded-full h-6 w-6 transition-all -translate-x-2 duration-300 opacity-0 bg-blue-700 group-hover:opacity-100 group-hover:translate-x-0 hover:bg-blue-400"
-					>
-						<PlusIcon className="text-white" />
-					</Button>
+					<div className="flex gap-2 transition-all -translate-x-2 duration-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 ">
+						<Button
+							size="icon"
+							className="rounded-full h-6 w-6 transition-all duration-300 bg-blue-700 hover:bg-blue-400"
+							onClick={handleNewNode}
+						>
+							<PlusIcon className="text-white" />
+						</Button>
+						<Button
+							size="icon"
+							className="rounded-full h-6 w-6 transition-all duration-300 bg-red-700 hover:bg-blue-400"
+							onClick={handleDeleteNode}
+						>
+							<MinusIcon className="text-white" />
+						</Button>
+					</div>
 				</div>
 			</div>
 			{hasChildren && (

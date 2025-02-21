@@ -8,12 +8,31 @@ import { Menu, Prisma } from '@prisma/client';
 export class MenusService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createMenuDto: CreateMenuDto): Promise<Menu> {
-    return this.prisma.menu.create({
-      data: {
-        label: createMenuDto.label,
-        depth: createMenuDto.depth,
+  async create(createMenuDto: CreateMenuDto): Promise<
+    Prisma.MenuGetPayload<{
+      include: {
+        childs: true;
+      };
+    }>[]
+  > {
+    let root = await this.prisma.menu.findUnique({
+      where: {
+        id: createMenuDto.parentId,
+      },
+      include: {
+        childs: true,
+      },
+    });
 
+    root = root!;
+
+    const count = root.childs ? root.childs.length : 0;
+
+    await this.prisma.menu.create({
+      data: {
+        label: 'New Menu',
+        depth: root.depth + 1,
+        order: count,
         parent: {
           connect: {
             id: createMenuDto.parentId,
@@ -21,6 +40,9 @@ export class MenusService {
         },
       },
     });
+
+    // return getRoots();
+    return this.getRoots();
   }
 
   async findAll(): Promise<Menu[]> {
@@ -84,11 +106,39 @@ export class MenusService {
     });
   }
 
-  async remove(id: string): Promise<Menu> {
-    return this.prisma.menu.delete({
-      where: {
-        id,
-      },
-    });
+  async remove(id: string): Promise<
+    Prisma.MenuGetPayload<{
+      include: {
+        childs: true;
+      };
+    }>[]
+  > {
+    // recursive delete
+    const cascadeDelete = async (id: string, prisma: PrismaService) => {
+      const menu = await this.prisma.menu.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          childs: true,
+        },
+      });
+
+      if (menu) {
+        for (const child of menu.childs) {
+          await cascadeDelete(child.id, prisma);
+        }
+
+        await this.prisma.menu.delete({
+          where: {
+            id,
+          },
+        });
+      }
+    };
+
+    await cascadeDelete(id, this.prisma);
+
+    return this.getRoots();
   }
 }
