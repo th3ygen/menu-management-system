@@ -8,7 +8,7 @@ export interface NavigationState {
 }
 
 const initialState: NavigationState = {
-    activeMenuId: "1",
+    activeMenuId: "3",
     activeBranchId: "1",
 };
 

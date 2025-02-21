@@ -1,11 +1,16 @@
 "use client";
 
-import { ChevronRight, MinusIcon, PlusIcon } from "lucide-react";
+import { ChevronRight, PenIcon, PlusIcon, TrashIcon } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { deleteMenu, newMenu, setExpanded } from "@/store/menu/menu-slice";
+import {
+	deleteMenu,
+	newMenu,
+	setActiveNode,
+	setExpanded,
+} from "@/store/menu/menu-slice";
 
 export interface TreeNode {
 	id: string;
@@ -32,6 +37,10 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 
 	const handleDeleteNode = () => {
 		dispatch(deleteMenu(node.id));
+	};
+
+	const handleEdit = () => {
+		dispatch(setActiveNode(node));
 	};
 
 	const IndicatorLine = () => {
@@ -115,10 +124,17 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 						</Button>
 						<Button
 							size="icon"
+							className="rounded-full h-6 w-6 transition-all duration-300 bg-blue-700 hover:bg-blue-400"
+							onClick={handleEdit}
+						>
+							<PenIcon className="text-white" />
+						</Button>
+						<Button
+							size="icon"
 							className="rounded-full h-6 w-6 transition-all duration-300 bg-red-700 hover:bg-blue-400"
 							onClick={handleDeleteNode}
 						>
-							<MinusIcon className="text-white" />
+							<TrashIcon className="text-white" />
 						</Button>
 					</div>
 				</div>

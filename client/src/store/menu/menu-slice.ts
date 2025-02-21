@@ -4,6 +4,8 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface MenuState {
 	tree: TreeNode[];
+	activeNode: TreeNode | null;
+	activeNodeId: string;
 	status: "pending" | "success" | "failed";
 	isExpanded: boolean;
 }
@@ -26,18 +28,6 @@ function parseMenu(data: Menu[]): TreeNode[] {
 	return traverse(data, 0);
 }
 
-export const fetchMenus = createAsyncThunk("/menus/roots", async () => {
-	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}` +
-			"/menus/roots"
-	);
-	const data = await response.json();
-
-	const parsed = parseMenu(data);
-
-	return parsed;
-});
-
 type NewMenuParams = {
 	parentId: string;
 };
@@ -50,6 +40,45 @@ export const newMenu = createAsyncThunk(
 				"/menus",
 			{
 				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			}
+		);
+		const result = await response.json();
+
+		const parsed = parseMenu(result);
+
+		return parsed;
+	}
+);
+
+export const fetchMenus = createAsyncThunk("/menus/roots", async () => {
+	const response = await fetch(
+		`${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}` +
+			"/menus/roots"
+	);
+	const data = await response.json();
+
+	const parsed = parseMenu(data);
+
+	return parsed;
+});
+
+type UpdateMenuParams = {
+	id: string;
+	label: string;
+};
+
+export const updateMenu = createAsyncThunk(
+	"/menus/update",
+	async (data: UpdateMenuParams) => {
+		const response = await fetch(
+			`${process.env.NEXT_PUBLIC_SERVER_HOST}:${process.env.NEXT_PUBLIC_SERVER_PORT}` +
+				`/menus/${data.id}`,
+			{
+				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -84,6 +113,8 @@ export const deleteMenu = createAsyncThunk(
 
 const initialState: MenuState = {
 	tree: [],
+	activeNode: null,
+	activeNodeId: "",
 	isExpanded: true,
 	status: "pending",
 };
@@ -98,6 +129,10 @@ export const menuSlice = createSlice({
 		setExpanded: (state, action: PayloadAction<boolean>) => {
 			state.isExpanded = action.payload;
 		},
+		setActiveNode: (state, action: PayloadAction<TreeNode>) => {
+			state.activeNode = action.payload;
+			state.activeNodeId = action.payload.id;
+		}
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchMenus.fulfilled, (state, action) => {
@@ -132,9 +167,20 @@ export const menuSlice = createSlice({
 		builder.addCase(deleteMenu.pending, (state) => {
 			state.status = "pending";
 		});
+
+		builder.addCase(updateMenu.fulfilled, (state, action) => {
+			state.tree = action.payload;
+			state.status = "success";
+		});
+		builder.addCase(updateMenu.rejected, (state) => {
+			state.status = "failed";
+		});
+		builder.addCase(updateMenu.pending, (state) => {
+			state.status = "pending";
+		});
 	},
 });
 
-export const { setTree, setExpanded } = menuSlice.actions;
+export const { setTree, setExpanded, setActiveNode } = menuSlice.actions;
 
 export default menuSlice.reducer;

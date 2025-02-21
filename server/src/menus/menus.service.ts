@@ -97,13 +97,26 @@ export class MenusService {
     return getNestedMenus(null, this.prisma);
   }
 
-  async update(id: string, updateMenuDto: UpdateMenuDto): Promise<Menu> {
-    return this.prisma.menu.update({
+  async update(
+    id: string,
+    updateMenuDto: UpdateMenuDto,
+  ): Promise<
+    Prisma.MenuGetPayload<{
+      include: {
+        childs: true;
+      };
+    }>[]
+  > {
+    await this.prisma.menu.update({
       where: {
         id,
       },
-      data: updateMenuDto,
+      data: {
+        label: updateMenuDto.label,
+      },
     });
+
+    return this.getRoots();
   }
 
   async remove(id: string): Promise<

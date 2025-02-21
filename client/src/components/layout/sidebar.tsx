@@ -65,7 +65,7 @@ const Category: React.FC<{ nav: NavCategory }> = ({ nav }) => {
 		));
 
 	return (
-		<div className="flex flex-col bg-secondary-foreground rounded-xl py-2">
+		<div className="flex flex-col bg-secondary-foreground rounded-xl py-2 my-2">
 			<div className="flex gap-4 px-4 py-2">
 				{nav.icon}
 				<h2 className="font-semibold text-sm text-accent">{nav.label}</h2>
