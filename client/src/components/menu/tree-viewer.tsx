@@ -2,9 +2,12 @@
 
 import { ChevronRight } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setExpanded } from "@/store/menu/menu-slice";
 
-interface TreeNode {
+export interface TreeNode {
 	id: string;
 	label: string;
 	childs?: TreeNode[];
@@ -12,28 +15,14 @@ interface TreeNode {
 	isLastChild?: boolean;
 }
 
-interface TreeViewProps {
-	data: TreeNode[];
-	maxHeight?: string;
-}
-
-const TreeView: React.FC<TreeViewProps> = ({ data, maxHeight = "400px" }) => {
-	return (
-		<div
-			className={`overflow-auto border border-gray-200 rounded-lg`}
-			style={{ maxHeight }}
-		>
-			<ul className="p-2">
-				{data.map((node) => (
-					<TreeNode key={node.id} node={node} />
-				))}
-			</ul>
-		</div>
-	);
-};
-
 const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 	const [isOpen, setIsOpen] = useState(false);
+	const isExpanded = useAppSelector((state) => state.menu.isExpanded);
+
+	useEffect(() => {
+		setIsOpen(isExpanded);
+		console.log("isExpanded", isExpanded);
+	}, [isExpanded]);
 
 	const hasChildren = node.childs && node.childs.length > 0;
 
@@ -41,12 +30,12 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 		if (node.depth === 0) {
 			return;
 		}
-        
+
 		/* if last child, draw L */
 		if (node.isLastChild) {
-            /* FIX short vertical */
-            if (!node.childs || node.childs.length === 0) {
-                return (
+			/* FIX short vertical */
+			if (!node.childs || node.childs.length === 0) {
+				return (
 					<div className="absolute top-0 -left-[13px] h-full w-5">
 						{/* vertical */}
 						<div className="absolute left-0 top-0 h-full w-[1.5px] bg-gray-300 scale-y-[.65] -translate-y-[2px] origin-top"></div>
@@ -54,8 +43,8 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 						<div className="absolute left-0 top-[11px] h-0.5 w-2/3 bg-gray-300"></div>
 					</div>
 				);
-            }
-            
+			}
+
 			return (
 				<div className="absolute top-0 -left-[13px] h-full w-5">
 					{/* vertical */}
@@ -121,4 +110,48 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 	);
 };
 
-export default TreeView;
+type TreeViewProps = {
+	data: TreeNode[];
+	maxHeight?: string;
+};
+
+const TreeViewer: React.FC<TreeViewProps> = ({ data, maxHeight = "600px" }) => {
+	const dispatch = useAppDispatch();
+
+	const handleExpandAll = () => {
+		dispatch(setExpanded(true));
+	};
+
+	const handleCollapseAll = () => {
+		dispatch(setExpanded(false));
+	};
+
+	return (
+		<div>
+			<div className="flex gap-2">
+				<Button
+					className="bg-secondary text-accent px-8 rounded-3xl"
+					onClick={handleExpandAll}
+				>
+					Expand All
+				</Button>
+				<Button
+					variant="outline"
+					className="px-8 rounded-3xl"
+					onClick={handleCollapseAll}
+				>
+					Collapse All
+				</Button>
+			</div>
+			<div className="overflow-auto" style={{ maxHeight }}>
+				<ul className="p-2">
+					{data.map((node) => (
+						<TreeNode key={node.id} node={node} />
+					))}
+				</ul>
+			</div>
+		</div>
+	);
+};
+
+export default TreeViewer;

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { Menu as MenuIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setActiveMenuId } from "@/store/navigation/navigation-slice";
 
 export type NavCategory = {
 	icon: React.ReactNode;
@@ -13,44 +15,51 @@ export type NavCategory = {
 };
 
 export type NavItem = {
+	id: string;
 	icon: React.ReactNode;
 	label: string;
-	href: string;
-	active?: boolean;
 };
 
 const ActiveItem: React.FC = () => {
 	return (
 		<motion.div
-			className="absolute left-0 top-0 w-full h-full rounded-2xl bg-primary z-0 pointer-events-none"
+			className="absolute top-0 left-0 w-full h-full rounded-2xl bg-primary z-0 pointer-events-none"
 			layoutId="active-item"
+			layout="position"
 		></motion.div>
 	);
 };
 
 const Category: React.FC<{ nav: NavCategory }> = ({ nav }) => {
-	const Items = () =>
+	const activeMenuId = useAppSelector(
+		(state) => state.navigation.activeMenuId
+	);
+	const dispatch = useAppDispatch();
+
+	const handleClick = (id: string) => {
+		dispatch(setActiveMenuId(id));
+	};
+	const renderItems = () =>
 		nav.items.map((item) => (
 			<li key={item.label}>
-				<a href={item.href}>
+				<div
+					className={cn(
+						"relative text-sm text-white/40 p-4 font-bold rounded-2xl cursor-pointer"
+					)}
+					onClick={() => handleClick(item.id)}
+				>
+					{activeMenuId === item.id ? <ActiveItem /> : null}
+
 					<div
 						className={cn(
-							"relative text-sm text-white/40 p-4 font-bold rounded-2xl"
+							"relative flex gap-4 z-10 duration-300",
+							activeMenuId === item.id && "text-secondary"
 						)}
 					>
-						{item.active && <ActiveItem />}
-
-						<div
-							className={cn(
-								"relative flex gap-4 z-10",
-								item.active && "text-secondary"
-							)}
-						>
-							{item.icon}
-							<p>{item.label}</p>
-						</div>
+						{item.icon}
+						<p>{item.label}</p>
 					</div>
-				</a>
+				</div>
 			</li>
 		));
 
@@ -58,11 +67,9 @@ const Category: React.FC<{ nav: NavCategory }> = ({ nav }) => {
 		<div className="flex flex-col bg-secondary-foreground rounded-xl py-2">
 			<div className="flex gap-4 px-4 py-2">
 				{nav.icon}
-				<h2 className="font-semibold text-sm">{nav.label}</h2>
+				<h2 className="font-semibold text-sm text-accent">{nav.label}</h2>
 			</div>
-			<ul className="flex flex-col">
-				<Items />
-			</ul>
+			<ul className="flex flex-col">{renderItems()}</ul>
 		</div>
 	);
 };

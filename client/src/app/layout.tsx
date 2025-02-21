@@ -12,7 +12,7 @@ import Topbar from "@/components/layout/topbar";
 import { Folder as FolderIcon, LayoutGrid as GridIcon } from "lucide-react";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
-	weight: ["200", "300", "400", "500", "600", "700"],
+	weight: ["200", "300", "400", "500", "600", "700", "800"],
 	subsets: ["latin"],
 });
 
@@ -28,23 +28,22 @@ const navs = [
 		items: [
 			{
 				label: "System 1",
-				href: "/",
+				id: "1",
 				icon: <GridIcon size={"1.2rem"} />,
 			},
 			{
 				label: "System 4",
-				href: "/",
+				id: "2",
 				icon: <GridIcon size={"1.2rem"} />,
 			},
 			{
 				label: "System 2",
-				href: "/",
+				id: "3",
 				icon: <GridIcon size={"1.2rem"} />,
-				active: true,
 			},
 			{
 				label: "System 3",
-				href: "/",
+				id: "4",
 				icon: <GridIcon size={"1.2rem"} />,
 			},
 		],
@@ -67,11 +66,9 @@ export default function RootLayout({
 						enableSystem
 					>
 						<Sidebar navs={navs} />
-						<Topbar />
-						<main className="w-full h-full pl-[17rem] pt-[5rem]">
-							<div className="w-full h-full bg-green-400">
-								{children}
-							</div>
+						<main className="w-full h-full pl-[19rem]">
+							<Topbar />
+							<div className="w-full h-full">{children}</div>
 						</main>
 					</ThemeProvider>
 				</StoreProvider>
