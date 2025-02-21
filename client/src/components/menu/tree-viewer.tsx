@@ -67,7 +67,10 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 	};
 
 	return (
-		<li className="my-3">
+		<li className="relative my-3">
+			{node.childs && node.childs.length > 0 && node.depth > 1 && !node.isLastChild && (
+				<div className="absolute -left-[13px] top-0 h-[115%] w-0.5 bg-gray-300 "></div>
+			)}
 			<div className="relative flex items-center">
 				<IndicatorLine />
 				{hasChildren && (
@@ -119,12 +122,12 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 };
 
 type TreeViewProps = {
-	data: TreeNode[];
 	maxHeight?: string;
 };
 
-const TreeViewer: React.FC<TreeViewProps> = ({ data, maxHeight = "600px" }) => {
+const TreeViewer: React.FC<TreeViewProps> = ({ maxHeight = "600px" }) => {
 	const dispatch = useAppDispatch();
+	const tree = useAppSelector((state) => state.menu.tree);
 
 	const handleExpandAll = () => {
 		dispatch(setExpanded(true));
@@ -153,7 +156,7 @@ const TreeViewer: React.FC<TreeViewProps> = ({ data, maxHeight = "600px" }) => {
 			</div>
 			<div className="overflow-auto" style={{ maxHeight }}>
 				<ul className="p-2">
-					{data.map((node) => (
+					{tree.map((node) => (
 						<TreeNode key={node.id} node={node} />
 					))}
 				</ul>

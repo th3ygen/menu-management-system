@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setActiveMenuId } from "@/store/navigation/navigation-slice";
 
 export type NavCategory = {
+	id: string;
 	icon: React.ReactNode;
 	label: string;
 	items: NavItem[];

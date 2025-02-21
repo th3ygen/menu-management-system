@@ -25,24 +25,25 @@ const navs = [
 	{
 		label: "Systems",
 		icon: <FolderIcon fill="white" size={"1.2rem"} />,
+		id: "1",
 		items: [
 			{
-				label: "System 1",
+				label: "System Code",
 				id: "1",
 				icon: <GridIcon size={"1.2rem"} />,
 			},
 			{
-				label: "System 4",
+				label: "Properties",
 				id: "2",
 				icon: <GridIcon size={"1.2rem"} />,
 			},
 			{
-				label: "System 2",
+				label: "Menus",
 				id: "3",
 				icon: <GridIcon size={"1.2rem"} />,
 			},
 			{
-				label: "System 3",
+				label: "API List",
 				id: "4",
 				icon: <GridIcon size={"1.2rem"} />,
 			},

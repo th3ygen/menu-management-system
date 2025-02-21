@@ -12,6 +12,7 @@ model Menu {
 
   label String
   depth Int
+  order Int    @default(0)
 
   parentId String?
   parent   Menu?   @relation("MenuChilds", fields: [parentId], references: [id])

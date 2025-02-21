@@ -25,6 +25,11 @@ export class MenusController {
     return this.menusService.findAll();
   }
 
+  @Get('/roots')
+  getRoots() {
+    return this.menusService.getRoots();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.menusService.findOne(id);

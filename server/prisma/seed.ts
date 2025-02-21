@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 type Menu = {
   label: string;
   depth: number;
+  order?: number;
   childs?: Menu[];
 };
 const sampleData: Menu[] = [
@@ -25,6 +26,7 @@ const sampleData: Menu[] = [
               {
                 label: 'System Code',
                 depth: 3,
+                order: 0,
                 childs: [
                   {
                     label: 'Code Registration',
@@ -35,14 +37,17 @@ const sampleData: Menu[] = [
               {
                 label: 'Code Registration - 2',
                 depth: 3,
+                order: 1,
               },
               {
                 label: 'Properties',
                 depth: 3,
+                order: 2,
               },
               {
                 label: 'Menus',
                 depth: 3,
+                order: 3,
                 childs: [
                   {
                     label: 'Menu Registration',
@@ -53,6 +58,7 @@ const sampleData: Menu[] = [
               {
                 label: 'API List',
                 depth: 3,
+                order: 4,
                 childs: [
                   {
                     label: 'API Registration',
@@ -69,6 +75,7 @@ const sampleData: Menu[] = [
           {
             label: 'Users & Groups',
             depth: 2,
+            order: 1,
             childs: [
               {
                 label: 'Users',
@@ -95,6 +102,7 @@ const sampleData: Menu[] = [
           {
             label: 'Competition',
             depth: 2,
+            order: 3,
           },
         ],
       },
@@ -111,6 +119,7 @@ async function main() {
         data: {
           label: menu.label,
           depth: menu.depth,
+          order: menu.order,
           parentId: parentId,
         },
       });
@@ -119,6 +128,7 @@ async function main() {
         data: {
           label: menu.label,
           depth: menu.depth,
+          order: menu.order,
         },
       });
     }

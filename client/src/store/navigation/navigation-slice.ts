@@ -8,8 +8,8 @@ export interface NavigationState {
 }
 
 const initialState: NavigationState = {
-    activeMenuId: "",
-    activeBranchId: "",
+    activeMenuId: "1",
+    activeBranchId: "1",
 };
 
 export const navigationSlice = createSlice({
