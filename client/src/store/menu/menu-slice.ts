@@ -7,7 +7,21 @@ export interface MenuState {
 }
 
 const initialState: MenuState = {
-	tree: [],
+	tree: [
+		{
+			id: "sys-root",
+			label: "system management",
+			depth: 0,
+			childs: [
+				{
+					id: "root",
+					label: "System Management",
+					childs: [],
+					depth: 1,
+				},
+			],
+		},
+	],
 	isExpanded: true,
 };
 

@@ -6,7 +6,7 @@ import { Menu, Prisma } from '@prisma/client';
 
 @Injectable()
 export class MenusService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(createMenuDto: CreateMenuDto): Promise<Menu> {
     return this.prisma.menu.create({
