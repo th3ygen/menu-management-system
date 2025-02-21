@@ -124,7 +124,7 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 					onHoverStart={handleHover}
 				>
 					<span className="ml-1 text-sm">{node.label}</span>
-					{hoveredId === node.id && (
+					{node.depth > 1 && hoveredId === node.id && (
 						<motion.div
 							className="h-0 flex gap-2 mb-4"
 							layoutId="actions"
