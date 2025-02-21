@@ -104,7 +104,12 @@ const MenuForm: React.FC = () => {
 						</FormItem>
 					)}
 				/>
-				<Button type="submit">Save</Button>
+				<Button
+					type="submit"
+					className="bg-blue-700 w-[15rem] text-white py-6 rounded-3xl"
+				>
+					Save
+				</Button>
 			</form>
 		</Form>
 	);

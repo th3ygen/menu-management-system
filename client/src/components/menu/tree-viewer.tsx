@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, PlusIcon } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
@@ -89,7 +89,15 @@ const TreeNode: React.FC<{ node: TreeNode }> = ({ node }) => {
 						<div className="absolute left-0 top-[11px] h-0.5 w-6 bg-gray-300"></div>
 					</>
 				)}
-				<span className="ml-1 text-sm">{node.label}</span>
+				<div className="flex gap-4 items-center group">
+					<span className="ml-1 text-sm">{node.label}</span>
+					<Button
+						size="icon"
+						className="rounded-full h-6 w-6 transition-all -translate-x-2 duration-300 opacity-0 bg-blue-700 group-hover:opacity-100 group-hover:translate-x-0 hover:bg-blue-400"
+					>
+						<PlusIcon className="text-white" />
+					</Button>
+				</div>
 			</div>
 			{hasChildren && (
 				<div
